@@ -7,6 +7,8 @@ import (
 	"os/exec"
 )
 
+var CmdHandler CmdExec
+
 func runMergeCmd(cmd *exec.Cmd, paths []string, mergeFilePath string) error {
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
@@ -35,6 +37,16 @@ func MergeFilesWithSameExtension(paths []string, mergedFilePath string) error {
 		cmds = append(cmds, "-i", path)
 	}
 	cmds = append(cmds, "-c:v", "copy", "-c:a", "copy", mergedFilePath)
+
+	if CmdHandler != nil {
+		fullCmd := ""
+		for _, item := range cmds {
+			fullCmd = fullCmd + " " + item
+		}
+		CmdHandler.RunCmd(fullCmd)
+		return nil
+	}
+
 	return runMergeCmd(exec.Command("ffmpeg", cmds...), paths, "")
 }
 
@@ -53,5 +65,16 @@ func MergeToMP4(paths []string, mergedFilePath string, filename string) error {
 		"ffmpeg", "-y", "-f", "concat", "-safe", "0",
 		"-i", mergeFilePath, "-c", "copy", "-bsf:a", "aac_adtstoasc", mergedFilePath,
 	)
+
+	if CmdHandler != nil {
+		fullCmd := "-y -f concat -safe 0 -i " + mergeFilePath + " -c copy -bsf:a aac_adtstoasc " + mergedFilePath
+		CmdHandler.RunCmd(fullCmd)
+		return nil
+	}
+
 	return runMergeCmd(cmd, paths, mergeFilePath)
+}
+
+type CmdExec interface {
+	RunCmd(cmd string) (string, error)
 }
