@@ -3,7 +3,7 @@ package downloader
 import (
 	"testing"
 
-	"github.com/iawia002/annie/extractors/types"
+	"github.com/sodapanda/annie/extractors/types"
 )
 
 func TestDownload(t *testing.T) {

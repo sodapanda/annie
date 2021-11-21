@@ -1,4 +1,4 @@
-module github.com/iawia002/annie
+module github.com/sodapanda/annie
 
 go 1.16
 

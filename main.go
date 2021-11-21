@@ -13,12 +13,12 @@ import (
 	"github.com/go-rod/rod"
 	"github.com/urfave/cli/v2"
 
-	"github.com/iawia002/annie/cookier"
-	"github.com/iawia002/annie/downloader"
-	"github.com/iawia002/annie/extractors"
-	"github.com/iawia002/annie/extractors/types"
-	"github.com/iawia002/annie/request"
-	"github.com/iawia002/annie/utils"
+	"github.com/sodapanda/annie/cookier"
+	"github.com/sodapanda/annie/downloader"
+	"github.com/sodapanda/annie/extractors"
+	"github.com/sodapanda/annie/extractors/types"
+	"github.com/sodapanda/annie/request"
+	"github.com/sodapanda/annie/utils"
 )
 
 func main() {
