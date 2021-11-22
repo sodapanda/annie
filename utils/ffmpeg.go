@@ -2,6 +2,7 @@ package utils
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -15,6 +16,22 @@ func runMergeCmd(cmd *exec.Cmd, paths []string, mergeFilePath string) error {
 	err := cmd.Run()
 	if err != nil {
 		return fmt.Errorf("%s\n%s", err, stderr.String())
+	}
+
+	if mergeFilePath != "" {
+		os.Remove(mergeFilePath) // nolint
+	}
+	// remove parts
+	for _, path := range paths {
+		os.Remove(path) // nolint
+	}
+	return nil
+}
+
+func runMergeCmdAndroid(cmd string, paths []string, mergeFilePath string) error {
+	result := CmdHandler.RunCmd(cmd)
+	if result != "ok" {
+		return errors.New("ffmpeg error:" + result)
 	}
 
 	if mergeFilePath != "" {
@@ -43,8 +60,8 @@ func MergeFilesWithSameExtension(paths []string, mergedFilePath string) error {
 		for _, item := range cmds {
 			fullCmd = fullCmd + " " + item
 		}
-		CmdHandler.RunCmd(fullCmd)
-		return nil
+
+		return runMergeCmdAndroid(fullCmd, paths, "")
 	}
 
 	return runMergeCmd(exec.Command("ffmpeg", cmds...), paths, "")
@@ -68,13 +85,12 @@ func MergeToMP4(paths []string, mergedFilePath string, filename string) error {
 
 	if CmdHandler != nil {
 		fullCmd := "-y -f concat -safe 0 -i " + mergeFilePath + " -c copy -bsf:a aac_adtstoasc " + mergedFilePath
-		CmdHandler.RunCmd(fullCmd)
-		return nil
+		return runMergeCmdAndroid(fullCmd, paths, mergeFilePath)
 	}
 
 	return runMergeCmd(cmd, paths, mergeFilePath)
 }
 
 type CmdExec interface {
-	RunCmd(cmd string) (string, error)
+	RunCmd(cmd string) string
 }
